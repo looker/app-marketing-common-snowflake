@@ -229,6 +229,21 @@ view: ad_metrics_period_comparison_base {
     group_label: "Period Comparisons"
     value_format_name: percent_1
   }
+
+  measure: clicks_percent_change {
+    hidden: yes
+    type: number
+    sql: (${fact.total_clicks} - ${last_fact.total_clicks}) / NULLIF(${last_fact.total_clicks}, 0) ;;
+    group_label: "Period Comparisons"
+    value_format_name: percent_1
+  }
+  measure: clicks_percent_change_abs {
+    hidden: yes
+    type: number
+    sql: abs(${fact.clicks_percent_change}) ;;
+    group_label: "Period Comparisons"
+    value_format_name: percent_1
+  }
   measure: average_cost_per_click_period_percent_change {
     hidden: yes
     type: number
