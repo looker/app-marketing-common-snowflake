@@ -195,7 +195,7 @@ view: date_base {
     hidden: yes
     type: number
     sql: {% if _dialect._name == 'redshift' %}
-          DATEDIFF(day, ${date_date}, CURRENT_DATE())
+          DATEDIFF(day, ${date_date}, CURRENT_DATE)
         {% else %}
           DATE_DIFF(${date_date}, CURRENT_DATE(), DAY)
         {% endif %}  ;;
