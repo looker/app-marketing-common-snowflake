@@ -95,15 +95,22 @@ view: ad_metrics_period_comparison_base {
     group_label: "Period Comparisons"
     value_format_name: percent_1
   }
+
   dimension: click_rate_both_periods {
     hidden: yes
     type: number
-    sql:  IF((${fact.clicks} + ${last_fact.clicks}) / NULLIF((${fact.impressions} + ${last_fact.impressions}),0)>1,
-             NULL,
-            (${fact.clicks} + ${last_fact.clicks}) / NULLIF((${fact.impressions} + ${last_fact.impressions}),0));;
+    # sql:  IF((${fact.clicks} + ${last_fact.clicks}) / NULLIF((${fact.impressions} + ${last_fact.impressions}),0)>1,
+    #         NULL,
+    #        (${fact.clicks} + ${last_fact.clicks}) / NULLIF((${fact.impressions} + ${last_fact.impressions}),0));;
+    expression:
+      if((${fact.clicks} + ${last_fact.clicks}) / if((${fact.impressions} + ${last_fact.impressions})=0,null,${fact.impressions} + ${last_fact.impressions})>1,
+        null,
+        (${fact.clicks} + ${last_fact.clicks}) / if((${fact.impressions} + ${last_fact.impressions})=0,null,${fact.impressions} + ${last_fact.impressions}))
+    ;;
     group_label: "Period Comparisons"
     value_format_name: percent_1
   }
+
   dimension: click_rate_period_z_score {
     hidden: yes
     type: number
@@ -133,15 +140,22 @@ view: ad_metrics_period_comparison_base {
     sql:  ${fact.click_rate} > ${last_fact.click_rate} ;;
     group_label: "Period Comparisons"
   }
+
   dimension: conversion_rate_both_periods {
     hidden: yes
     type: number
-    sql:  IF((${fact.conversions} + ${last_fact.conversions}) / NULLIF((${fact.clicks} + ${last_fact.clicks}),0) > 1,
-             NULL,
-             (${fact.conversions} + ${last_fact.conversions}) / NULLIF((${fact.clicks} + ${last_fact.clicks}),0)) ;;
+    #sql:  IF((${fact.conversions} + ${last_fact.conversions}) / NULLIF((${fact.clicks} + ${last_fact.clicks}),0) > 1,
+    #         NULL,
+    #         (${fact.conversions} + ${last_fact.conversions}) / NULLIF((${fact.clicks} + ${last_fact.clicks}),0)) ;;
+    expression:
+      if((${fact.conversions} + ${last_fact.conversions}) / if((${fact.clicks} + ${last_fact.clicks})=0,null,${fact.clicks} + ${last_fact.clicks}) > 1,
+        null,
+        (${fact.conversions} + ${last_fact.conversions}) / if((${fact.clicks} + ${last_fact.clicks})=0,null,${fact.clicks} + ${last_fact.clicks}))
+    ;;
     group_label: "Period Comparisons"
     value_format_name: percent_1
   }
+
   dimension: conversion_rate_period_z_score {
     hidden: yes
     type: number
