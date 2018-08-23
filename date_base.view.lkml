@@ -82,7 +82,7 @@ view: date_base {
     hidden: yes
     type: number
     sql: {% if _dialect._name == 'redshift' %}
-        DATEDIFF(${date_date}, ${date_quarter_date}, day)
+        DATEDIFF(day, ${date_date}, ${date_quarter_date})
         {% else %}
         DATE_DIFF(${date_date}, ${date_quarter_date}, day)
       {% endif %}  ;;
@@ -195,7 +195,7 @@ view: date_base {
     hidden: yes
     type: number
     sql: {% if _dialect._name == 'redshift' %}
-          DATEDIFF(${date_date}, CURRENT_DATE(), DAY)
+          DATEDIFF(day, ${date_date}, CURRENT_DATE())
         {% else %}
           DATE_DIFF(${date_date}, CURRENT_DATE(), DAY)
         {% endif %}  ;;
