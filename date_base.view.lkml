@@ -38,7 +38,13 @@ view: date_base {
     hidden: yes
     type: date
     convert_tz: no
-    sql: DATE_TRUNC(${date_date}, MONTH) ;;
+    sql:
+      {% if _dialect._name == 'redshift' %}
+        DATETRUNC(${date_date}, MONTH)
+      {% else %}
+        DATE_TRUNC(MONTH, ${date_date})
+      {% endif %}
+    ;;
 #     expression: trunc_months(${date_date});;
   }
 
@@ -48,7 +54,11 @@ view: date_base {
     hidden: yes
     type: date
     convert_tz: no
-    sql: DATE_TRUNC(${date_date}, QUARTER) ;;
+    sql: {% if _dialect._name == 'redshift' %}
+        DATETRUNC(QUARTER, ${date_date})
+      {% else %}
+        DATE_TRUNC(${date_date}, QUARTER)
+      {% endif %} ;;
 #     expression: trunc_quarters(${date_date});;
   }
 
@@ -58,7 +68,11 @@ view: date_base {
     hidden: yes
     type: date
     convert_tz: no
-    sql: DATE_TRUNC(${date_date}, YEAR) ;;
+    sql: {% if _dialect._name == 'redshift' %}
+        DATETRUNC(YEAR, ${date_date})
+        {% else %}
+        DATE_TRUNC(${date_date}, YEAR)
+      {% endif %}  ;;
 #     expression: trunc_years(${date_date}) ;;
   }
 
@@ -67,7 +81,11 @@ view: date_base {
     label: "Day of Quarter"
     hidden: yes
     type: number
-    sql: DATE_DIFF(${date_date}, ${date_quarter_date}, day) ;;
+    sql: {% if _dialect._name == 'redshift' %}
+        DATEDIFF(${date_date}, ${date_quarter_date}, day)
+        {% else %}
+        DATE_DIFF(${date_date}, ${date_quarter_date}, day)
+      {% endif %}  ;;
 #     expression: diff_days(${date_quarter_date}, ${date_date}) ;;
   }
 
@@ -77,7 +95,11 @@ view: date_base {
     hidden: yes
     type: date
     convert_tz: no
-    sql: DATE_ADD(${date_date}), INTERVAL -1 WEEK) ;;
+    sql: {% if _dialect._name == 'redshift' %}
+        DATEADD(week, -1, ${date_quarter_date})
+        {% else %}
+        DATE_ADD(${date_date}), INTERVAL -1 WEEK)
+      {% endif %} ;;
 #     expression: add_days(${date_date}, 7) ;;
   }
 
@@ -87,7 +109,11 @@ view: date_base {
     hidden: yes
     type: date
     convert_tz: no
-    sql: DATE_ADD(${date_date}), INTERVAL -1 MONTH) ;;
+    sql: {% if _dialect._name == 'redshift' %}
+        DATEADD(month, -1, ${date_date})
+        {% else %}
+        DATE_ADD(${date_date}), INTERVAL -1 MONTH)
+      {% endif %} ;;
 #     expression: add_months(${date_date}, 1) ;;
   }
 
@@ -97,7 +123,11 @@ view: date_base {
     hidden: yes
     type: date
     convert_tz: no
-    sql: DATE_ADD(${date_date}), INTERVAL -1 QUARTER) ;;
+    sql: {% if _dialect._name == 'redshift' %}
+        DATEADD(quarter, -1, ${date_date})
+        {% else %}
+        DATE_ADD(${date_date}), INTERVAL -1 QUARTER)
+        {% endif %} ;;
 #     expression: add_months(${date_date}, -3) ;;
   }
 
@@ -105,7 +135,11 @@ view: date_base {
     hidden: yes
     type: date
     convert_tz: no
-    sql: DATE_ADD(${date_date}), INTERVAL 1 WEEK) ;;
+    sql:  {% if _dialect._name == 'redshift' %}
+          DATEADD(week, 1, ${date_date})
+          {% else %}
+          DATE_ADD(${date_date}), INTERVAL 1 WEEK)
+          {% endif %} ;;
 #     expression: add_days(${date_date}, 7) ;;
   }
 
@@ -113,7 +147,11 @@ view: date_base {
     hidden: yes
     type: date
     convert_tz: no
-    sql: DATE_ADD(${date_date}), INTERVAL 1 MONTH) ;;
+    sql: {% if _dialect._name == 'redshift' %}
+          DATEADD(month, 1, ${date_date})
+          {% else %}
+          DATE_ADD(${date_date}), INTERVAL 1 MONTH)
+          {% endif %}  ;;
 #     expression: add_months(${date_date}, 1) ;;
   }
 
@@ -121,7 +159,11 @@ view: date_base {
     hidden: yes
     type: date
     convert_tz: no
-    sql: DATE_ADD(${date_date}), INTERVAL 1 QUARTER) ;;
+    sql: {% if _dialect._name == 'redshift' %}
+          DATEADD(quarter, 1, ${date_date})
+          {% else %}
+          DATE_ADD(${date_date}), INTERVAL 1 QUARTER)
+          {% endif %}  ;;
 #     expression: add_months(${date_date}, 3) ;;
   }
 
@@ -129,7 +171,11 @@ view: date_base {
     hidden: yes
     type: date
     convert_tz: no
-    sql: DATE_ADD(${date_date}), INTERVAL 1 YEAR) ;;
+    sql: {% if _dialect._name == 'redshift' %}
+          DATEADD(year, 1, ${date_date})
+          {% else %}
+          DATE_ADD(${date_date}), INTERVAL 1 YEAR)
+          {% endif %}  ;;
 #     expression: add_years(${date_date}, 1) ;;
   }
 
@@ -137,14 +183,22 @@ view: date_base {
     hidden: yes
     type: date
     convert_tz: no
-    sql: DATE_ADD(${date_date}), INTERVAL -1 YEAR) ;;
+    sql: {% if _dialect._name == 'redshift' %}
+          DATEADD(year, -1, ${date_date})
+          {% else %}
+          DATE_ADD(${date_date}), INTERVAL -1 YEAR)
+          {% endif %}  ;;
 #     expression: add_years(${date_date}, -1) ;;
   }
 
   dimension: date_days_prior {
     hidden: yes
     type: number
-    sql: DATE_DIFF(${date_date}, CURRENT_DATE(), DAY) ;;
+    sql: {% if _dialect._name == 'redshift' %}
+          DATEDIFF(${date_date}, CURRENT_DATE(), DAY)
+        {% else %}
+          DATE_DIFF(${date_date}, CURRENT_DATE(), DAY)
+        {% endif %}  ;;
 #     expression: diff_days(${date_date}, now()) ;;
   }
 
@@ -180,7 +234,11 @@ view: date_base {
     hidden: yes
     type: date
     convert_tz: no
-    sql: DATE_ADD(${date_date}, INTERVAL -${date_day_of_7_days_prior} DAY) ;;
+    sql: {% if _dialect._name == 'redshift' %}
+          DATEADD(day, -${date_day_of_7_days_prior}, ${date_date})
+        {% else %}
+          DATE_ADD(${date_date}, INTERVAL -${date_day_of_7_days_prior} DAY)
+        {% endif %} ;;
 #     expression: add_days(-1 * ${date_day_of_7_days_prior}, ${date_date}) ;;
   }
 
@@ -188,7 +246,11 @@ view: date_base {
     hidden: yes
     type: date
     convert_tz: no
-    sql: DATE_ADD(${date_date}, INTERVAL -${date_day_of_28_days_prior} DAY) ;;
+    sql: {% if _dialect._name == 'redshift' %}
+          DATEADD(day, -${date_day_of_28_days_prior}, ${date_date})
+        {% else %}
+          DATE_ADD(${date_date}, INTERVAL -${date_day_of_28_days_prior} DAY)
+        {% endif %} ;;
 #     expression: add_days(-1 * ${date_day_of_28_days_prior}, ${date_date}) ;;
   }
 
@@ -196,7 +258,11 @@ view: date_base {
     hidden: yes
     type: date
     convert_tz: no
-    sql: DATE_ADD(${date_date}, INTERVAL -${date_day_of_91_days_prior} DAY) ;;
+    sql: {% if _dialect._name == 'redshift' %}
+          DATEADD(day, -${date_day_of_91_days_prior}, ${date_date})
+        {% else %}
+          DATE_ADD(${date_date}, INTERVAL -${date_day_of_91_days_prior} DAY)
+        {% endif %} ;;
 #     expression: add_days(-1 * ${date_day_of_91_days_prior}, ${date_date}) ;;
   }
 
@@ -204,7 +270,11 @@ view: date_base {
     hidden: yes
     type: date
     convert_tz: no
-    sql: DATE_ADD(${date_date}, INTERVAL -${date_day_of_364_days_prior} DAY) ;;
+    sql: {% if _dialect._name == 'redshift' %}
+          DATEADD(day, -${date_day_of_364_days_prior}, ${date_date})
+        {% else %}
+          DATE_ADD(${date_date}, INTERVAL -${date_day_of_364_days_prior} DAY)
+        {% endif %} ;;
 #     expression: add_days(-1 * ${date_day_of_364_days_prior}, ${date_date}) ;;
   }
 
