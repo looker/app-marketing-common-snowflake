@@ -104,18 +104,33 @@ view: period_base {
     convert_tz: no
     label_from_parameter: period
     group_label: "Event"
-    sql: TIMESTAMP({% if fact.period._parameter_value contains "day" %}
+    sql: {% if _dialect._name == 'redshift' %}
+          {% if fact.period._parameter_value contains "day" %}
+          {% if fact.period._parameter_value == "'7 day'" %}${date_date_7_days_prior}
+          {% elsif fact.period._parameter_value == "'28 day'" %}${date_date_28_days_prior}
+          {% elsif fact.period._parameter_value == "'91 day'" %}${date_date_91_days_prior}
+          {% elsif fact.period._parameter_value == "'364 day'" %}${date_date_364_days_prior}
+          {% else %}${date_date}
+          {% endif %}
+          {% elsif fact.period._parameter_value contains "week" %}${date_week}
+          {% elsif fact.period._parameter_value contains "month" %}${date_month_date}
+          {% elsif fact.period._parameter_value contains "quarter" %}${date_quarter_date}
+          {% elsif fact.period._parameter_value contains "year" %}${date_year_date}
+          {% endif %}
+      {% else %}
+        TIMESTAMP({% if fact.period._parameter_value contains "day" %}
         {% if fact.period._parameter_value == "'7 day'" %}${date_date_7_days_prior}
         {% elsif fact.period._parameter_value == "'28 day'" %}${date_date_28_days_prior}
         {% elsif fact.period._parameter_value == "'91 day'" %}${date_date_91_days_prior}
         {% elsif fact.period._parameter_value == "'364 day'" %}${date_date_364_days_prior}
         {% else %}${date_date}
         {% endif %}
-      {% elsif fact.period._parameter_value contains "week" %}${date_week}
-      {% elsif fact.period._parameter_value contains "month" %}${date_month_date}
-      {% elsif fact.period._parameter_value contains "quarter" %}${date_quarter_date}
-      {% elsif fact.period._parameter_value contains "year" %}${date_year_date}
-      {% endif %}) ;;
+        {% elsif fact.period._parameter_value contains "week" %}${date_week}
+        {% elsif fact.period._parameter_value contains "month" %}${date_month_date}
+        {% elsif fact.period._parameter_value contains "quarter" %}${date_quarter_date}
+        {% elsif fact.period._parameter_value contains "year" %}${date_year_date}
+      {% endif %})
+      {% endif %} ;;
     allow_fill: no
   }
   dimension: date_end_of_period {
