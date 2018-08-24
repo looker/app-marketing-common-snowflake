@@ -139,7 +139,7 @@ view: period_base {
     label_from_parameter: period
     group_label: "Event"
     sql: {% if _dialect._name == 'redshift' %}
-        TIMESTAMP({% if fact.period._parameter_value contains "day" %}
+        {% if fact.period._parameter_value contains "day" %}
         {% if fact.period._parameter_value == "'7 day'" %}DATEADD(day, 7, ${date_period})
         {% elsif fact.period._parameter_value == "'28 day'" %}DATEADD(day, 28, ${date_period})
         {% elsif fact.period._parameter_value == "'91 day'" %}DATEADD(day, 91, ${date_period})
@@ -150,7 +150,7 @@ view: period_base {
         {% elsif fact.period._parameter_value contains "month" %}DATEADD(month, 1, ${date_period})
         {% elsif fact.period._parameter_value contains "quarter" %}DATEADD(quarter, 1, ${date_period})
         {% elsif fact.period._parameter_value contains "year" %}DATEADD(year, 1, ${date_period})
-        {% endif %})
+        {% endif %}
       {% else %}
         TIMESTAMP({% if fact.period._parameter_value contains "day" %}
         {% if fact.period._parameter_value == "'7 day'" %}DATE_ADD(${date_period}, INTERVAL 7 DAY)
