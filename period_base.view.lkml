@@ -234,19 +234,20 @@ view: period_base {
     type: date
     convert_tz: no
     sql: {% if _dialect._name == 'redshift' %}
-        DATEADD(day, - {% if fact.period._parameter_value == "'7 day'" %}7
-        {% elsif fact.period._parameter_value == "'28 day'" %}28
-        {% elsif fact.period._parameter_value == "'91 day'" %}91
-        {% elsif fact.period._parameter_value == "'364 day'" %}364
-        {% else %}1
-        {% endif %}
+        DATEADD(
         {% if fact.period._parameter_value contains "day" %}day
         {% elsif fact.period._parameter_value contains "week" %}week
         {% elsif fact.period._parameter_value contains "month" %}month
         {% elsif fact.period._parameter_value contains "quarter" %}quarter
         {% elsif fact.period._parameter_value contains "year" %}year
         {% endif %}
-        1, ${date_period})
+        , - {% if fact.period._parameter_value == "'7 day'" %}7
+        {% elsif fact.period._parameter_value == "'28 day'" %}28
+        {% elsif fact.period._parameter_value == "'91 day'" %}91
+        {% elsif fact.period._parameter_value == "'364 day'" %}364
+        {% else %}1
+        {% endif %}
+        , ${date_period})
       {% else %}
         DATE_ADD(${date_period}, INTERVAL -{% if fact.period._parameter_value == "'7 day'" %}7
         {% elsif fact.period._parameter_value == "'28 day'" %}28
