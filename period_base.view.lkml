@@ -141,6 +141,24 @@ view: period_base {
     sql: ${date_period} < CURRENT_DATE() ;;
     # expression: ${date_period} < now() ;;
   }
+  dimension: date_period_comparison_period {
+    hidden: yes
+    description: "Is the selected period (This Period) in the last two periods?"
+    type: yesno
+    group_label: "Event"
+    sql: ${date_period} >= {% if period._parameter_value contains "day" %}
+        {% if period._parameter_value == "'7 day'" %}DATE_ADD(CURRENT_DATE(), INTERVAL -2*7 DAY)
+        {% elsif period._parameter_value == "'28 day'" %}DATE_ADD(CURRENT_DATE(), INTERVAL -2*28 DAY)
+        {% elsif period._parameter_value == "'91 day'" %}DATE_ADD(CURRENT_DATE(), INTERVAL -2*91 DAY)
+        {% elsif period._parameter_value == "'364 day'" %}DATE_ADD(CURRENT_DATE(), INTERVAL -2*364 DAY)
+        {% else %}DATE_ADD(CURRENT_DATE(), INTERVAL -2 DAY)
+        {% endif %}
+      {% elsif period._parameter_value contains "week" %}DATE_ADD(CURRENT_DATE(), INTERVAL -2 WEEK)
+      {% elsif period._parameter_value contains "month" %}DATE_ADD(CURRENT_DATE(), INTERVAL -2 MONTH)
+      {% elsif period._parameter_value contains "quarter" %}DATE_ADD(CURRENT_DATE(), INTERVAL -2 QUARTER)
+      {% elsif period._parameter_value contains "year" %}DATE_ADD(CURRENT_DATE(), INTERVAL -2 YEAR)
+      {% endif %} ;;
+  }
   dimension: date_period_dynamic_grain {
     hidden: yes
     type: date
