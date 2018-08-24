@@ -192,7 +192,20 @@ view: period_base {
     description: "Is the selected period (This Period) in the last two periods?"
     type: yesno
     group_label: "Event"
-    sql: ${date_period} >= {% if period._parameter_value contains "day" %}
+    sql: ${date_period} >= {% if _dialect._name == 'redshift' %}
+      {% if period._parameter_value contains "day" %}
+        {% if period._parameter_value == "'7 day'" %}DATEADD(day, -2*7, CURRENT_DATE)
+        {% elsif period._parameter_value == "'28 day'" %}DATEADD(day, -2*28, CURRENT_DATE)
+        {% elsif period._parameter_value == "'91 day'" %}DATEADD(day, -2*91, CURRENT_DATE)
+        {% elsif period._parameter_value == "'364 day'" %}DATEADD(day, -2*364, CURRENT_DATE)
+        {% else %}DATEADD(day, -2, CURRENT_DATE)
+        {% endif %}
+      {% elsif period._parameter_value contains "week" %}DATEADD(week, -2, CURRENT_DATE)
+      {% elsif period._parameter_value contains "month" %}DATEADD(month, -2, CURRENT_DATE)
+      {% elsif period._parameter_value contains "quarter" %}DATEADD(quarter, -2, CURRENT_DATE)
+      {% elsif period._parameter_value contains "year" %}DATEADD(year, -2, CURRENT_DATE)
+      {% endif %}
+      {% if period._parameter_value contains "day" %}
         {% if period._parameter_value == "'7 day'" %}DATE_ADD(CURRENT_DATE(), INTERVAL -2*7 DAY)
         {% elsif period._parameter_value == "'28 day'" %}DATE_ADD(CURRENT_DATE(), INTERVAL -2*28 DAY)
         {% elsif period._parameter_value == "'91 day'" %}DATE_ADD(CURRENT_DATE(), INTERVAL -2*91 DAY)
@@ -203,7 +216,9 @@ view: period_base {
       {% elsif period._parameter_value contains "month" %}DATE_ADD(CURRENT_DATE(), INTERVAL -2 MONTH)
       {% elsif period._parameter_value contains "quarter" %}DATE_ADD(CURRENT_DATE(), INTERVAL -2 QUARTER)
       {% elsif period._parameter_value contains "year" %}DATE_ADD(CURRENT_DATE(), INTERVAL -2 YEAR)
-      {% endif %} ;;
+      {% else %}
+
+      {% endif %};;
   }
   dimension: date_period_dynamic_grain {
     hidden: yes
