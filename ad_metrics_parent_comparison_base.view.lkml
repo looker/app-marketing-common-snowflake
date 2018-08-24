@@ -276,38 +276,110 @@ view: ad_metrics_parent_comparison_base {
     group_label: "Parent Comparisons"
     value_format_name: decimal_2
   }
+
   dimension: click_rate_z_score {
-    hidden: yes
+    hidden: no
     type: number
-    sql:
-    (
-      (${fact.click_rate}) -
-      (${fact.click_rate_delta})
-    ) /
-    NULLIF(SQRT(
-      ${parent_fact.click_rate}  *
-      (1 - IF(${parent_fact.click_rate}>1, NULL, ${parent_fact.click_rate})) *
-      ((1 / IF(${fact.impressions}<=0, NULL, ${fact.impressions})) + (1 / IF(${fact.impressions_delta}<=0, NULL, ${fact.impressions_delta})))
-    ),0) ;;
+    #sql:
+    #(
+    #  (${fact.click_rate}) -
+    #  (${fact.click_rate_delta})
+    #) /
+    #NULLIF(SQRT(
+    #  ${parent_fact.click_rate}  *
+    #  (1 - IF(${parent_fact.click_rate}>1, NULL, ${parent_fact.click_rate})) *
+    #  ((1 / IF(${fact.impressions}<=0, NULL, ${fact.impressions})) + (1 / IF(${fact.impressions_delta}<=0, NULL, ${fact.impressions_delta})))
+    #),0) ;;
+    expression:
+      (
+        (${fact.click_rate}) -
+        (${fact.click_rate_delta})
+      ) /
+      if(
+        sqrt(${parent_fact.click_rate} *
+          (1 - if(${parent_fact.click_rate} > 1, null, ${parent_fact.click_rate})) *
+          (
+            (1 / if(${fact.impressions} <= 0, null, ${fact.impressions})) +
+            (1 / if(${fact.impressions_delta} <= 0, null, ${fact.impressions_delta}))
+          )
+        )
+        = 0,
+        null,
+        sqrt(${parent_fact.click_rate} *
+          (1 - if(${parent_fact.click_rate} > 1, null, ${parent_fact.click_rate})) *
+          (
+            (1 / if(${fact.impressions} <= 0, null, ${fact.impressions})) +
+            (1 / if(${fact.impressions_delta} <= 0, null, ${fact.impressions_delta}))
+          )
+        )
+      )
+    ;;
     group_label: "Parent Comparisons"
     value_format_name: decimal_2
   }
+
   measure: average_click_rate_z_score {
-    hidden: yes
+    hidden: no
     type: number
     sql:
-    (
-      (${fact.average_click_rate}) -
-      (${fact.average_click_rate_delta})
-    ) /
-    NULLIF(SQRT(
-      ${parent_fact.average_click_rate}  *
-      (1 - IF(${parent_fact.average_click_rate}>1, NULL, ${parent_fact.average_click_rate})) *
-      ((1 / IF(${fact.total_impressions}<=0, NULL, ${fact.total_impressions})) + (1 / IF(${fact.total_impressions_delta}<=0, NULL, ${fact.total_impressions_delta})))
-    ),0) ;;
+      {% if _dialect._name == 'redshift' %}
+        (
+         (${fact.average_click_rate}) -
+         (${fact.average_click_rate_delta})
+        ) /
+        NULLIF(SQRT(
+          ${parent_fact.average_click_rate} *
+          (
+            1 -
+                (CASE WHEN (${parent_fact.average_click_rate}) > 1
+                THEN NULL
+                ELSE ${parent_fact.average_click_rate} END)
+          ) *
+          (
+            (1 /
+              (CASE WHEN ${fact.total_impressions} <= 0
+              THEN NULL
+              ELSE ${fact.total_impressions} END)
+            ) +
+            (1 /
+              (CASE WHEN ${fact.total_impressions_delta} <= 0
+              THEN NULL
+              ELSE ${fact.total_impressions_delta} END)
+            )
+          )
+        ),0)
+      {% else %}
+        (
+         (${fact.average_click_rate}) -
+         (${fact.average_click_rate_delta})
+        ) /
+        NULLIF(SQRT(
+          ${parent_fact.average_click_rate} *
+          (
+            1 -
+                IF(${parent_fact.average_click_rate} > 1,
+                NULL,
+                ${parent_fact.average_click_rate})
+          ) *
+          (
+            (1 /
+              IF(${fact.total_impressions} <= 0,
+              NULL,
+              ${fact.total_impressions})
+            ) +
+            (1 /
+              IF(${fact.total_impressions_delta} <= 0,
+              NULL,
+             ${fact.total_impressions_delta})
+            )
+          )
+        ),0)
+      {% endif %}
+    ;;
     group_label: "Parent Comparisons"
     value_format_name: decimal_2
   }
+
   dimension: click_rate_significant {
     hidden: yes
     type: yesno
@@ -334,38 +406,110 @@ view: ad_metrics_parent_comparison_base {
     sql:  ${fact.average_click_rate} > ${parent_fact.average_click_rate} ;;
     group_label: "Parent Comparisons"
   }
+
   dimension: conversion_rate_z_score {
-    hidden: yes
+    hidden: no
     type: number
-    sql:
-    (
-      (${fact.conversion_rate}) -
-      (${fact.conversion_rate_delta})
-    ) /
-    NULLIF(SQRT(
-      ${parent_fact.conversion_rate} *
-      (1 - IF(${parent_fact.conversion_rate} > 1, NULL, ${parent_fact.conversion_rate})) *
-      ((1 / IF(${fact.clicks} <=0, NULL, ${fact.clicks})) + (1 / IF(${fact.clicks_delta}<=0, NULL, ${fact.clicks_delta})))
-    ),0) ;;
+    # sql:
+    # (
+    #   (${fact.conversion_rate}) -
+    #   (${fact.conversion_rate_delta})
+    # ) /
+    # NULLIF(SQRT(
+    #   ${parent_fact.conversion_rate} *
+    #    (1 - IF(${parent_fact.conversion_rate} > 1, NULL, ${parent_fact.conversion_rate})) *
+    #   ((1 / IF(${fact.clicks} <=0, NULL, ${fact.clicks})) + (1 / IF(${fact.clicks_delta}<=0, NULL, ${fact.clicks_delta})))
+    # ),0) ;;
+    expression:
+      (
+        (${fact.conversion_rate}) -
+        (${fact.conversion_rate_delta})
+      ) /
+      if(
+        sqrt(${parent_fact.conversion_rate} *
+          (1 - if(${parent_fact.conversion_rate} > 1, null, ${parent_fact.conversion_rate})) *
+          (
+            (1 / if(${fact.clicks} <= 0, null, ${fact.clicks})) +
+            (1 / if(${fact.clicks_delta} <= 0, null, ${fact.clicks_delta}))
+          )
+        )
+        = 0,
+        null,
+        sqrt(${parent_fact.conversion_rate} *
+          (1 - if(${parent_fact.conversion_rate} > 1, null, ${parent_fact.conversion_rate})) *
+          (
+            (1 / if(${fact.clicks} <= 0, null, ${fact.clicks})) +
+            (1 / if(${fact.clicks_delta} <= 0, null, ${fact.clicks_delta}))
+          )
+        )
+      )
+    ;;
     group_label: "Parent Comparisons"
     value_format_name: decimal_2
   }
+
   measure: average_conversion_rate_z_score {
-    hidden: yes
+    hidden: no
     type: number
     sql:
-    (
-      (${fact.average_conversion_rate}) -
-      (${fact.average_conversion_rate_delta})
-    ) /
-    NULLIF(SQRT(
-      ${parent_fact.average_conversion_rate} *
-      (1 - IF(${parent_fact.average_conversion_rate} > 1, NULL, ${parent_fact.average_conversion_rate})) *
-      ((1 / IF(${fact.total_clicks} <=0, NULL, ${fact.total_clicks})) + (1 / IF(${fact.total_clicks_delta}<=0, NULL, ${fact.total_clicks_delta})))
-    ),0) ;;
+      {% if _dialect._name == 'redshift' %}
+        (
+         (${fact.average_conversion_rate}) -
+         (${fact.average_conversion_rate_delta})
+        ) /
+        NULLIF(SQRT(
+          ${parent_fact.average_conversion_rate} *
+          (
+            1 -
+              (CASE WHEN (${parent_fact.average_conversion_rate} > 1)
+              THEN NULL
+              ELSE ${parent_fact.average_conversion_rate} END)
+          ) *
+          (
+            (1 /
+              (CASE WHEN (${fact.total_clicks} <= 0)
+              THEN NULL
+              ELSE ${fact.total_clicks} END)
+            ) +
+            (1 /
+              (CASE WHEN (${fact.total_clicks_delta} <= 0)
+              THEN NULL
+              ELSE ${fact.total_clicks_delta} END)
+            )
+          )
+        ),0)
+      {% else %}
+        (
+         (${fact.average_conversion_rate}) -
+         (${fact.average_conversion_rate_delta})
+        ) /
+        NULLIF(SQRT(
+          ${parent_fact.average_conversion_rate} *
+          (
+            1 -
+              IF(${parent_fact.average_conversion_rate} > 1,
+              NULL,
+              ${parent_fact.average_conversion_rate})
+          ) *
+          (
+            (1 /
+              IF(${fact.total_clicks} <= 0,
+              NULL,
+              ${fact.total_clicks})
+            ) +
+            (1 /
+              IF (${fact.total_clicks_delta} <= 0,
+              NULL,
+              ${fact.total_clicks_delta})
+            )
+          )
+        ),0)
+      {% endif %}
+    ;;
     group_label: "Parent Comparisons"
     value_format_name: decimal_2
   }
+
   dimension: conversion_rate_significant {
     hidden: yes
     type: yesno
