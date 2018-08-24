@@ -172,7 +172,7 @@ view: period_base {
     group_label: "Event"
     sql: {% if _dialect._name == 'redshift' %}
           ${date_period} < CURRENT_DATE AND ${date_end_of_period} >= CURRENT_DATE
-        { % else %}
+        {% else %}
           ${date_period} < CURRENT_DATE() AND ${date_end_of_period} >= CURRENT_DATE()
         {% endif %} ;;
     # expression: ${date_period} < now() AND ${date_end_of_period} >= now() ;;
