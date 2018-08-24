@@ -218,6 +218,7 @@ view: period_base {
         {% elsif period._parameter_value contains "month" %}DATE_ADD(CURRENT_DATE(), INTERVAL -2 MONTH)
         {% elsif period._parameter_value contains "quarter" %}DATE_ADD(CURRENT_DATE(), INTERVAL -2 QUARTER)
         {% elsif period._parameter_value contains "year" %}DATE_ADD(CURRENT_DATE(), INTERVAL -2 YEAR)
+        {% endif %}
       {% endif %};;
   }
   dimension: date_period_dynamic_grain {
