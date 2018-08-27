@@ -222,6 +222,7 @@ view: period_base {
       {% endif %};;
   }
   dimension: date_period_dynamic_grain {
+    datatype: date
     hidden: yes
     type: date
     convert_tz: no
