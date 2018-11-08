@@ -28,7 +28,7 @@ view: date_base {
     hidden: yes
     type: date
     convert_tz: no
-    sql: CAST(${date_week} AS DATE) ;;
+    sql: TO_DATE(${date_week}) ;;
 #     expression: to_date(${date_week}) ;;
   }
 
@@ -38,7 +38,7 @@ view: date_base {
     hidden: yes
     type: date
     convert_tz: no
-    sql: DATE_TRUNC(${date_date}, MONTH) ;;
+    sql: DATE_TRUNC('MONTH', ${date_date}) ;;
 #     expression: trunc_months(${date_date});;
   }
 
@@ -48,7 +48,7 @@ view: date_base {
     hidden: yes
     type: date
     convert_tz: no
-    sql: DATE_TRUNC(${date_date}, QUARTER) ;;
+    sql: DATE_TRUNC('QUARTER', ${date_date}) ;;
 #     expression: trunc_quarters(${date_date});;
   }
 
@@ -58,7 +58,7 @@ view: date_base {
     hidden: yes
     type: date
     convert_tz: no
-    sql: DATE_TRUNC(${date_date}, YEAR) ;;
+    sql: DATE_TRUNC('YEAR', ${date_date}) ;;
 #     expression: trunc_years(${date_date}) ;;
   }
 
@@ -67,7 +67,7 @@ view: date_base {
     label: "Day of Quarter"
     hidden: yes
     type: number
-    sql: DATE_DIFF(${date_date}, ${date_quarter_date}, day)  ;;
+    sql: DATEDIFF(day, ${date_date}, ${date_quarter_date})  ;;
 #     expression: diff_days(${date_quarter_date}, ${date_date}) ;;
   }
 
@@ -77,7 +77,7 @@ view: date_base {
     hidden: yes
     type: date
     convert_tz: no
-    sql: DATE_ADD(${date_date}), INTERVAL -1 WEEK) ;;
+    sql: DATEADD(WEEK, -1, ${date_date}) ;;
 #     expression: add_days(${date_date}, 7) ;;
   }
 
@@ -87,7 +87,7 @@ view: date_base {
     hidden: yes
     type: date
     convert_tz: no
-    sql: DATE_ADD(${date_date}), INTERVAL -1 MONTH) ;;
+    sql: DATEADD(MONTH, -1, ${date_date}) ;;
 #     expression: add_months(${date_date}, 1) ;;
   }
 
@@ -97,7 +97,7 @@ view: date_base {
     hidden: yes
     type: date
     convert_tz: no
-    sql: DATE_ADD(${date_date}), INTERVAL -1 QUARTER) ;;
+    sql: DATEADD(QUARTER, -1, ${date_date}) ;;
 #     expression: add_months(${date_date}, -3) ;;
   }
 
@@ -105,7 +105,7 @@ view: date_base {
     hidden: yes
     type: date
     convert_tz: no
-    sql:  DATE_ADD(${date_date}), INTERVAL 1 WEEK) ;;
+    sql:  DATEADD(WEEK, 1, ${date_date}) ;;
 #     expression: add_days(${date_date}, 7) ;;
   }
 
@@ -113,7 +113,7 @@ view: date_base {
     hidden: yes
     type: date
     convert_tz: no
-    sql: DATE_ADD(${date_date}), INTERVAL 1 MONTH) ;;
+    sql: DATEADD(MONTH, 1, ${date_date}) ;;
 #     expression: add_months(${date_date}, 1) ;;
   }
 
@@ -121,7 +121,7 @@ view: date_base {
     hidden: yes
     type: date
     convert_tz: no
-    sql: DATE_ADD(${date_date}), INTERVAL 1 QUARTER) ;;
+    sql: DATE_ADD(QUARTER, 1, ${date_date}) ;;
 #     expression: add_months(${date_date}, 3) ;;
   }
 
@@ -129,7 +129,7 @@ view: date_base {
     hidden: yes
     type: date
     convert_tz: no
-    sql: DATE_ADD(${date_date}), INTERVAL 1 YEAR) ;;
+    sql: DATEADD(YEAR, 1, ${date_date}) ;;
 #     expression: add_years(${date_date}, 1) ;;
   }
 
@@ -137,14 +137,14 @@ view: date_base {
     hidden: yes
     type: date
     convert_tz: no
-    sql: DATE_ADD(${date_date}), INTERVAL -1 YEAR) ;;
+    sql: DATEADD(YEAR, -1, ${date_date}) ;;
 #     expression: add_years(${date_date}, -1) ;;
   }
 
   dimension: date_days_prior {
     hidden: yes
     type: number
-    sql: DATE_DIFF(${date_date}, CURRENT_DATE(), DAY) ;;
+    sql: DATEDIFF(DAY, ${date_date}, CURRENT_DATE()) ;;
 #     expression: diff_days(${date_date}, now()) ;;
   }
 
@@ -180,7 +180,7 @@ view: date_base {
     hidden: yes
     type: date
     convert_tz: no
-    sql: DATE_ADD(${date_date}, INTERVAL -${date_day_of_7_days_prior} DAY) ;;
+    sql: DATEADD(DAY, -${date_day_of_7_days_prior}, ${date_date}) ;;
 #     expression: add_days(-1 * ${date_day_of_7_days_prior}, ${date_date}) ;;
   }
 
@@ -188,7 +188,7 @@ view: date_base {
     hidden: yes
     type: date
     convert_tz: no
-    sql: DATE_ADD(${date_date}, INTERVAL -${date_day_of_28_days_prior} DAY) ;;
+    sql: DATEADD(DAY, -${date_day_of_28_days_prior}, ${date_date}) ;;
 #     expression: add_days(-1 * ${date_day_of_28_days_prior}, ${date_date}) ;;
   }
 
@@ -196,7 +196,7 @@ view: date_base {
     hidden: yes
     type: date
     convert_tz: no
-    sql: DATE_ADD(${date_date}, INTERVAL -${date_day_of_91_days_prior} DAY) ;;
+    sql: DATEADD(DAY, -${date_day_of_91_days_prior}, ${date_date}) ;;
 #     expression: add_days(-1 * ${date_day_of_91_days_prior}, ${date_date}) ;;
   }
 
@@ -204,7 +204,7 @@ view: date_base {
     hidden: yes
     type: date
     convert_tz: no
-    sql: DATE_ADD(${date_date}, INTERVAL -${date_day_of_364_days_prior} DAY) ;;
+    sql: DATEADD(DAY, -${date_day_of_364_days_prior}, ${date_date} ) ;;
 #     expression: add_days(-1 * ${date_day_of_364_days_prior}, ${date_date}) ;;
   }
 
