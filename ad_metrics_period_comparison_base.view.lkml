@@ -46,7 +46,7 @@ view: ad_metrics_period_comparison_base {
     group_label: "Period Comparisons"
     value_format_name: percent_1
   }
-  dimension:  value_per_cost_period_percent_change_abs {
+  dimension: value_per_cost_period_percent_change_abs {
     hidden: yes
     type: number
     sql: abs(${fact.value_per_cost_period_percent_change}) ;;
@@ -99,14 +99,9 @@ view: ad_metrics_period_comparison_base {
   dimension: click_rate_both_periods {
     hidden: yes
     type: number
-    # sql:  IF((${fact.clicks} + ${last_fact.clicks}) / NULLIF((${fact.impressions} + ${last_fact.impressions}),0)>1,
-    #         NULL,
-    #        (${fact.clicks} + ${last_fact.clicks}) / NULLIF((${fact.impressions} + ${last_fact.impressions}),0));;
-    expression:
-      if((${fact.clicks} + ${last_fact.clicks}) / if((${fact.impressions} + ${last_fact.impressions})=0,null,${fact.impressions} + ${last_fact.impressions})>1,
-        null,
-        (${fact.clicks} + ${last_fact.clicks}) / if((${fact.impressions} + ${last_fact.impressions})=0,null,${fact.impressions} + ${last_fact.impressions}))
-    ;;
+    sql:  IF((${fact.clicks} + ${last_fact.clicks}) / NULLIF((${fact.impressions} + ${last_fact.impressions}),0)>1,
+            NULL,
+           (${fact.clicks} + ${last_fact.clicks}) / NULLIF((${fact.impressions} + ${last_fact.impressions}),0));;
     group_label: "Period Comparisons"
     value_format_name: percent_1
   }
@@ -144,14 +139,9 @@ view: ad_metrics_period_comparison_base {
   dimension: conversion_rate_both_periods {
     hidden: yes
     type: number
-    #sql:  IF((${fact.conversions} + ${last_fact.conversions}) / NULLIF((${fact.clicks} + ${last_fact.clicks}),0) > 1,
-    #         NULL,
-    #         (${fact.conversions} + ${last_fact.conversions}) / NULLIF((${fact.clicks} + ${last_fact.clicks}),0)) ;;
-    expression:
-      if((${fact.conversions} + ${last_fact.conversions}) / if((${fact.clicks} + ${last_fact.clicks})=0,null,${fact.clicks} + ${last_fact.clicks}) > 1,
-        null,
-        (${fact.conversions} + ${last_fact.conversions}) / if((${fact.clicks} + ${last_fact.clicks})=0,null,${fact.clicks} + ${last_fact.clicks}))
-    ;;
+    sql:  IF((${fact.conversions} + ${last_fact.conversions}) / NULLIF((${fact.clicks} + ${last_fact.clicks}),0) > 1,
+            NULL,
+            (${fact.conversions} + ${last_fact.conversions}) / NULLIF((${fact.clicks} + ${last_fact.clicks}),0)) ;;
     group_label: "Period Comparisons"
     value_format_name: percent_1
   }
@@ -215,6 +205,36 @@ view: ad_metrics_period_comparison_base {
     sql: ${fact.total_conversionvalue} - ${last_fact.total_conversionvalue} ;;
     group_label: "Period Comparisons"
   }
+  measure: total_cost_period_delta_abs {
+    hidden: yes
+    type: number
+    sql: abs(${fact.total_cost_period_delta}) ;;
+    group_label: "Period Comparisons"
+  }
+  measure: total_impressions_period_delta_abs {
+    hidden: yes
+    type: number
+    sql: abs(${fact.total_impressions_period_delta}) ;;
+    group_label: "Period Comparisons"
+  }
+  measure: total_clicks_period_delta_abs {
+    hidden: yes
+    type: number
+    sql: abs(${fact.total_clicks_period_delta}) ;;
+    group_label: "Period Comparisons"
+  }
+  measure: total_conversions_period_delta_abs {
+    hidden: yes
+    type: number
+    sql: abs(${fact.total_conversions_period_delta}) ;;
+    group_label: "Period Comparisons"
+  }
+  measure: total_conversionvalue_period_delta_abs {
+    hidden: yes
+    type: number
+    sql: abs(${total_conversionvalue_period_delta}) ;;
+    group_label: "Period Comparisons"
+  }
   measure: average_click_rate_period_percent_change {
     hidden: yes
     type: number
@@ -244,17 +264,49 @@ view: ad_metrics_period_comparison_base {
     value_format_name: percent_1
   }
 
-  measure: clicks_percent_change {
+  measure: total_impressions_period_percent_change {
+    hidden: yes
+    type: number
+    sql: (${fact.total_impressions} - ${last_fact.total_impressions}) / NULLIF(${last_fact.total_impressions}, 0) ;;
+    group_label: "Period Comparisons"
+    value_format_name: percent_1
+  }
+
+  measure: total_impressions_period_percent_change_abs {
+    hidden: yes
+    type: number
+    sql: abs(${fact.total_impressions_period_percent_change}) ;;
+    group_label: "Period Comparisons"
+    value_format_name: percent_1
+  }
+
+  measure: average_cost_per_impression_period_percent_change {
+    hidden: yes
+    type: number
+    sql: (${fact.average_cost_per_impression} - ${last_fact.average_cost_per_impression}) / NULLIF(${last_fact.average_cost_per_impression}, 0) ;;
+    group_label: "Period Comparisons"
+    value_format_name: percent_1
+  }
+
+  measure: average_cost_per_impression_period_percent_change_abs {
+    hidden: yes
+    type: number
+    sql: abs(${fact.average_cost_per_impression_period_percent_change}) ;;
+    group_label: "Period Comparisons"
+    value_format_name: percent_1
+  }
+
+  measure: total_clicks_period_percent_change {
     hidden: yes
     type: number
     sql: (${fact.total_clicks} - ${last_fact.total_clicks}) / NULLIF(${last_fact.total_clicks}, 0) ;;
     group_label: "Period Comparisons"
     value_format_name: percent_1
   }
-  measure: clicks_percent_change_abs {
+  measure: total_clicks_period_percent_change_abs {
     hidden: yes
     type: number
-    sql: abs(${fact.clicks_percent_change}) ;;
+    sql: abs(${fact.total_clicks_period_percent_change}) ;;
     group_label: "Period Comparisons"
     value_format_name: percent_1
   }
@@ -280,7 +332,7 @@ view: ad_metrics_period_comparison_base {
     group_label: "Period Comparisons"
     value_format_name: percent_1
   }
-  measure: average_value_per_cost_percent_change_abs {
+  measure: average_value_per_cost_period_percent_change_abs {
     hidden: yes
     type: number
     sql: abs(${fact.average_value_per_cost_period_percent_change}) ;;
