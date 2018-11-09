@@ -58,7 +58,7 @@ view: date_base {
     hidden: yes
     type: date
     convert_tz: no
-    sql: DATE_TRUNC('YEAR', ${date_date}) ;;
+    sql: DATE_TRUNC('YEAR', TO_DATE(${date_date})) ;;
 #     expression: trunc_years(${date_date}) ;;
   }
 
@@ -67,7 +67,7 @@ view: date_base {
     label: "Day of Quarter"
     hidden: yes
     type: number
-    sql: DATEDIFF(day, ${date_date}, ${date_quarter_date})  ;;
+    sql: DATEDIFF('DAY', ${date_date}, ${date_quarter_date})  ;;
 #     expression: diff_days(${date_quarter_date}, ${date_date}) ;;
   }
 
