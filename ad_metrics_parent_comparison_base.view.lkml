@@ -287,8 +287,8 @@ view: ad_metrics_parent_comparison_base {
     ) /
     NULLIF(SQRT(
      ${parent_fact.click_rate}  *
-     (1 - IF(${parent_fact.click_rate}>1, NULL, ${parent_fact.click_rate})) *
-     ((1 / IF(${fact.impressions}<=0, NULL, ${fact.impressions})) + (1 / IF(${fact.impressions_delta}<=0, NULL, ${fact.impressions_delta})))
+     (1 - IFF(${parent_fact.click_rate}>1, NULL, ${parent_fact.click_rate})) *
+     ((1 / IFF(${fact.impressions}<=0, NULL, ${fact.impressions})) + (1 / IFF(${fact.impressions_delta}<=0, NULL, ${fact.impressions_delta})))
     ),0) ;;
     group_label: "Parent Comparisons"
     value_format_name: decimal_2
@@ -306,18 +306,18 @@ view: ad_metrics_parent_comparison_base {
           ${parent_fact.average_click_rate} *
           (
             1 -
-                IF(${parent_fact.average_click_rate} > 1,
+                IFF(${parent_fact.average_click_rate} > 1,
                 NULL,
                 ${parent_fact.average_click_rate})
           ) *
           (
             (1 /
-              IF(${fact.total_impressions} <= 0,
+              IFF(${fact.total_impressions} <= 0,
               NULL,
               ${fact.total_impressions})
             ) +
             (1 /
-              IF(${fact.total_impressions_delta} <= 0,
+              IFF(${fact.total_impressions_delta} <= 0,
               NULL,
              ${fact.total_impressions_delta})
             )
@@ -365,8 +365,8 @@ view: ad_metrics_parent_comparison_base {
     ) /
     NULLIF(SQRT(
       ${parent_fact.conversion_rate} *
-       (1 - IF(${parent_fact.conversion_rate} > 1, NULL, ${parent_fact.conversion_rate})) *
-      ((1 / IF(${fact.clicks} <=0, NULL, ${fact.clicks})) + (1 / IF(${fact.clicks_delta}<=0, NULL, ${fact.clicks_delta})))
+       (1 - IFF(${parent_fact.conversion_rate} > 1, NULL, ${parent_fact.conversion_rate})) *
+      ((1 / IFF(${fact.clicks} <=0, NULL, ${fact.clicks})) + (1 / IFF(${fact.clicks_delta}<=0, NULL, ${fact.clicks_delta})))
     ),0) ;;
     group_label: "Parent Comparisons"
     value_format_name: decimal_2
@@ -384,13 +384,13 @@ view: ad_metrics_parent_comparison_base {
           ${parent_fact.average_conversion_rate} *
           (
             1 -
-              IF(${parent_fact.average_conversion_rate} > 1,
+              IFF(${parent_fact.average_conversion_rate} > 1,
               NULL,
               ${parent_fact.average_conversion_rate})
           ) *
           (
             (1 /
-              IF(${fact.total_clicks} <= 0,
+              IFF(${fact.total_clicks} <= 0,
               NULL,
               ${fact.total_clicks})
             ) +
