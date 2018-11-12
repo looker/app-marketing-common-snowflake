@@ -4,6 +4,6 @@ view: date_primary_key_base {
   dimension: primary_key {
     hidden: yes
     primary_key: yes
-    sql: CONCAT(TO_CHAR(${_date}), '-', ${key_base}) ;;
+    sql: TO_CHAR(${_date}) || '-' || ${key_base} ;;
   }
 }
