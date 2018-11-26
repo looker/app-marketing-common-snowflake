@@ -144,7 +144,7 @@ view: date_base {
   dimension: date_days_prior {
     hidden: yes
     type: number
-    sql: DATEDIFF(DAY, ${date_date}, CURRENT_DATE()) ;;
+    sql: DATEDIFF(DAY, CURRENT_DATE(), ${date_date}) ;;
 #     expression: diff_days(${date_date}, now()) ;;
   }
 
