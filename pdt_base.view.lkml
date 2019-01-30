@@ -1,1 +1,1 @@
-view: pdt_base: {}
+view: pdt_base {}
